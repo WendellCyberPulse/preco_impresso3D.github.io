@@ -1,7 +1,7 @@
 function calcularCusto() {
     let tempo = parseFloat(document.getElementById('tempo').value) || 0;
     let filamento = parseFloat(document.getElementById('filamento').value) || 0;
-    let margemLucro = parseFloat(document.getElementById('lucro').value) || 50;
+    let margemLucro = parseFloat(document.getElementById('lucro').value) || 100;
     
     let precoKWh = 7.3575; // Média calculada
     let potencia = 0.1; // Impressora consome 100W (0.1 kW)

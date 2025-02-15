@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Impressão 3D - Prisma Studio</title>
+   <link rel="stylesheet" href="/css/style.css">
+   <script src="/js/script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="printer">
+            <div class="nozzle"></div>
+        </div>
+        <h2 class="brand-text">Prisma Studio</h2>
+        <p class="contact">(31) 9 8339-9262</p>
+        <h2>Calculadora de Custo de Impressão 3D</h2>
+        <label>Tempo de Impressão (h):</label>
+        <input type="number" id="tempo" placeholder="Digite as horas">
+        <br>
+        <label>Quantidade de Filamento (g):</label>
+        <input type="number" id="filamento" placeholder="Digite os gramas">
+        <br>
+        <label>Margem de Lucro (%):</label>
+        <input type="number" id="lucro" value="100">
+        <br>
+        <button onclick="calcularCusto()">Calcular</button>
+    </div>
+
+    <div id="resultadoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal()">&times;</span>
+            <div id="resultado"></div>
+        </div>
+    </div>
+</body>
+</html>

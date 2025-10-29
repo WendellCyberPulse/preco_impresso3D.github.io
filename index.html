@@ -6,7 +6,6 @@
     <title>Calculadora de Impressão 3D - Prisma Studio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary: #6A0DAD;
@@ -458,6 +457,32 @@
             gap: 15px;
         }
         
+        .legal-notice {
+            background: #2A2A2A;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .legal-notice h3 {
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .notice-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .notice-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
         .footer {
             margin-top: 30px;
             text-align: center;
@@ -622,12 +647,27 @@
             <button class="btn-primary" onclick="calcularCusto()">
                 <i class="fas fa-calculator"></i> Calcular Custo
             </button>
-            <button class="btn-success" onclick="gerarPDF()" id="btnPDF" disabled>
-                <i class="fas fa-file-pdf"></i> Gerar Orçamento PDF
+            <button class="btn-success" onclick="gerarRecibo()" id="btnPDF" disabled>
+                <i class="fas fa-file-pdf"></i> Gerar Recibo PDF
             </button>
             <button class="btn-secondary" onclick="limparCampos()">
                 <i class="fas fa-redo"></i> Limpar Campos
             </button>
+        </div>
+
+        <div class="legal-notice">
+            <h3><i class="fas fa-info-circle"></i> Informações Legais Importantes</h3>
+            <div class="notice-content">
+                <p><strong>Este documento é um RECIBO SIMPLES, não uma nota fiscal.</strong></p>
+                <p>Como pessoa física realizando vendas eventuais, você pode utilizar recibo simples para comprovar a transação.</p>
+                <p><strong>Recomendações:</strong></p>
+                <ul>
+                    <li>Mantenha cópia de todos os recibos emitidos</li>
+                    <li>Registre todas as vendas em um controle simples</li>
+                    <li>Para clientes PJ, verifique a necessidade de emissão de nota fiscal</li>
+                </ul>
+                <p><em>Em caso de dúvidas sobre obrigações fiscais, consulte um contador.</em></p>
+            </div>
         </div>
         
         <div class="footer">
@@ -641,8 +681,8 @@
             <h2 class="result-title">Resultado do Cálculo</h2>
             <div id="resultado"></div>
             <div class="buttons" style="margin-top: 20px;">
-                <button class="btn-success" onclick="gerarPDF()">
-                    <i class="fas fa-file-pdf"></i> Gerar Orçamento PDF
+                <button class="btn-success" onclick="gerarRecibo()">
+                    <i class="fas fa-file-pdf"></i> Gerar Recibo PDF
                 </button>
                 <button class="btn-primary" onclick="fecharModal()">
                     <i class="fas fa-check"></i> Fechar
@@ -869,7 +909,7 @@
             document.getElementById('btnPDF').disabled = true;
         }
         
-        function gerarPDF() {
+        function gerarRecibo() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
@@ -896,13 +936,13 @@
             
             doc.setFontSize(12);
             doc.setFont('helvetica', 'normal');
-            doc.text('Impressão 3D Profissional', 105, 24, { align: 'center' });
+            doc.text('Impressão 3D Profissional - Recibo de Venda', 105, 24, { align: 'center' });
             
-            // Título do orçamento
+            // Título do recibo
             doc.setTextColor(0, 0, 0);
-            doc.setFontSize(18);
+            doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
-            doc.text('ORÇAMENTO DE IMPRESSÃO 3D', 105, 45, { align: 'center' });
+            doc.text('RECIBO DE VENDA', 105, 45, { align: 'center' });
             
             // Informações do cliente
             doc.setFontSize(12);
@@ -912,29 +952,30 @@
             doc.setFont('helvetica', 'normal');
             doc.text(`Nome: ${nomeCliente}`, 20, 68);
             doc.text(`Produto: ${produto}`, 20, 76);
-            doc.text(`Data do Pedido: ${dataFormatada}`, 20, 84);
+            doc.text(`Data: ${dataFormatada}`, 20, 84);
             
             // Detalhes da impressão
             doc.setFont('helvetica', 'bold');
-            doc.text('Detalhes da Impressão:', 20, 100);
+            doc.text('Detalhes do Serviço:', 20, 100);
             
             doc.setFont('helvetica', 'normal');
-            doc.text(`Tempo de Impressão: ${dadosCalculo.tempoHoras}h ${dadosCalculo.tempoMinutos}min`, 20, 108);
-            doc.text(`Filamento Utilizado: ${dadosCalculo.filamento.toFixed(2)}g`, 20, 116);
-            doc.text(`Cor do Filamento: ${dadosCalculo.corSelecionada.charAt(0).toUpperCase() + dadosCalculo.corSelecionada.slice(1)}`, 20, 124);
-            doc.text(`Complexidade: ${document.getElementById('complexidade').options[document.getElementById('complexidade').selectedIndex].text}`, 20, 132);
+            doc.text(`• Impressão 3D personalizada`, 20, 108);
+            doc.text(`• Tempo de impressão: ${dadosCalculo.tempoHoras}h ${dadosCalculo.tempoMinutos}min`, 20, 116);
+            doc.text(`• Filamento: ${dadosCalculo.filamento.toFixed(2)}g - Cor: ${dadosCalculo.corSelecionada.charAt(0).toUpperCase() + dadosCalculo.corSelecionada.slice(1)}`, 20, 124);
+            doc.text(`• Complexidade: ${document.getElementById('complexidade').options[document.getElementById('complexidade').selectedIndex].text}`, 20, 132);
             
             // Observações
-            doc.setFont('helvetica', 'bold');
-            doc.text('Observações:', 20, 148);
-            
-            // Quebrar observações em múltiplas linhas se necessário
-            const observacoesLines = doc.splitTextToSize(observacoes, 170);
-            doc.setFont('helvetica', 'normal');
-            doc.text(observacoesLines, 20, 156);
+            if (observacoes && observacoes !== "Nenhuma observação adicional") {
+                doc.setFont('helvetica', 'bold');
+                doc.text('Observações:', 20, 148);
+                
+                const observacoesLines = doc.splitTextToSize(observacoes, 170);
+                doc.setFont('helvetica', 'normal');
+                doc.text(observacoesLines, 20, 156);
+            }
             
             // Preço final
-            const yPos = 156 + (observacoesLines.length * 6) + 15;
+            const yPos = (observacoes && observacoes !== "Nenhuma observação adicional") ? 156 + (observacoesLines.length * 6) + 15 : 148;
             
             doc.setFillColor(...corSecundaria);
             doc.rect(15, yPos, 180, 25, 'F');
@@ -942,21 +983,28 @@
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
-            doc.text('PREÇO FINAL', 105, yPos + 10, { align: 'center' });
+            doc.text('VALOR TOTAL', 105, yPos + 10, { align: 'center' });
             
             doc.setFontSize(20);
             doc.text(`R$ ${precoFinal.toFixed(2)}`, 105, yPos + 20, { align: 'center' });
             
-            // Rodapé
-            const rodapeY = 280;
-            doc.setTextColor(100, 100, 100);
+            // Assinatura
+            const assinaturaY = yPos + 50;
+            doc.setTextColor(0, 0, 0);
             doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
+            doc.text('_________________________________________', 105, assinaturaY, { align: 'center' });
+            doc.text('Assinatura do Prestador de Serviço', 105, assinaturaY + 8, { align: 'center' });
+            
+            // Rodapé com informações legais
+            const rodapeY = 270;
+            doc.setTextColor(100, 100, 100);
+            doc.setFontSize(8);
             doc.text('Prisma Studio - (31) 9 8339-9262', 105, rodapeY, { align: 'center' });
-            doc.text('Este orçamento é válido por 30 dias', 105, rodapeY + 5, { align: 'center' });
+            doc.text('Pessoa Física - Venda Ocasional - Recibo Simples', 105, rodapeY + 5, { align: 'center' });
+            doc.text('Documento válido para comprovação de transação entre particulares', 105, rodapeY + 10, { align: 'center' });
             
             // Salvar o PDF
-            doc.save(`Orcamento_${produto.replace(/\s+/g, '_')}_${dataFormatada.replace(/\//g, '-')}.pdf`);
+            doc.save(`Recibo_${produto.replace(/\s+/g, '_')}_${dataFormatada.replace(/\//g, '-')}.pdf`);
         }
     </script>
 </body>

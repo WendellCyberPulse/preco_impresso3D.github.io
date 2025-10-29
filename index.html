@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Impressão 3D - Prisma Studio</title>
+    <title>Calculadora Completa - Prisma Studio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -39,7 +39,7 @@
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             width: 100%;
             margin: 20px auto;
             padding: 30px;
@@ -82,14 +82,14 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .prisma-triangle {
             width: 80px;
             height: 70px;
             position: relative;
             transform: rotate(0deg);
         }
-        
+
         .prisma-triangle::before {
             content: "";
             position: absolute;
@@ -100,7 +100,7 @@
             border-color: transparent transparent transparent var(--primary);
             filter: drop-shadow(0 0 10px rgba(199, 179, 255, 0.3));
         }
-        
+
         .prisma-triangle::after {
             content: "";
             position: absolute;
@@ -114,7 +114,7 @@
             top: 5px;
             left: 5px;
         }
-        
+
         .prisma-inner {
             position: absolute;
             width: 60px;
@@ -148,6 +148,47 @@
             margin-bottom: 30px;
             color: var(--accent);
             font-size: 28px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            background: #2A2A2A;
+            border: none;
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
         
         .calculator-grid {
@@ -237,7 +278,7 @@
             color: var(--accent);
         }
         
-        .color-palette {
+        .color-options {
             display: flex;
             gap: 10px;
             margin-top: 10px;
@@ -245,19 +286,47 @@
         }
         
         .color-option {
-            width: 40px;
-            height: 40px;
+            padding: 10px 15px;
+            background: #2A2A2A;
+            border: 2px solid #444;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            flex: 1;
+            min-width: 80px;
+        }
+        
+        .color-option:hover {
+            transform: translateY(-2px);
+        }
+        
+        .color-option.selected {
+            border-color: var(--secondary);
+            background: var(--primary-light);
+        }
+        
+        .color-palette {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .color-palette-option {
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             cursor: pointer;
             border: 3px solid transparent;
             transition: all 0.3s;
         }
         
-        .color-option:hover {
+        .color-palette-option:hover {
             transform: scale(1.1);
         }
         
-        .color-option.selected {
+        .color-palette-option.selected {
             border-color: var(--secondary);
             transform: scale(1.1);
         }
@@ -528,12 +597,20 @@
                 flex-direction: column;
             }
             
-            .energy-flags {
+            .tabs {
                 flex-direction: column;
             }
             
             .client-info-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .color-options {
+                flex-direction: column;
+            }
+            
+            .energy-flags {
+                flex-direction: column;
             }
         }
     </style>
@@ -555,7 +632,19 @@
             </div>
         </div>
         
-        <h1>Calculadora de Custo de Impressão 3D</h1>
+        <h1>Calculadora Completa de Serviços</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('impressao3d')">
+                <i class="fas fa-print"></i> Impressão 3D
+            </button>
+            <button class="tab" onclick="openTab('canecas')">
+                <i class="fas fa-mug-hot"></i> Canecas
+            </button>
+            <button class="tab" onclick="openTab('camisas')">
+                <i class="fas fa-tshirt"></i> Camisas
+            </button>
+        </div>
         
         <div class="client-info">
             <h3><i class="fas fa-user"></i> Informações do Cliente e Pedido</h3>
@@ -565,8 +654,8 @@
                     <input type="text" id="nomeCliente" placeholder="Nome completo do cliente">
                 </div>
                 <div class="input-group">
-                    <label for="produto">Nome do Produto</label>
-                    <input type="text" id="produto" placeholder="Nome do produto a ser impresso">
+                    <label for="produto">Descrição do Pedido</label>
+                    <input type="text" id="produto" placeholder="Descrição do produto personalizado">
                 </div>
                 <div class="input-group">
                     <label for="dataPedido">Data do Pedido</label>
@@ -578,92 +667,232 @@
                 </div>
             </div>
         </div>
-        
-        <div class="calculator-grid">
-            <div class="input-section">
-                <div class="input-group">
-                    <label for="tempoHoras">Tempo de Impressão</label>
-                    <div class="time-inputs">
-                        <input type="number" id="tempoHoras" placeholder="Horas" min="0" value="0">
-                        <input type="number" id="tempoMinutos" placeholder="Minutos" min="0" max="59" value="0">
+
+        <!-- ABA IMPRESSÃO 3D -->
+        <div id="impressao3d" class="tab-content active">
+            <div class="calculator-grid">
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="tempoHoras">Tempo de Impressão</label>
+                        <div class="time-inputs">
+                            <input type="number" id="tempoHoras" placeholder="Horas" min="0" value="0">
+                            <input type="number" id="tempoMinutos" placeholder="Minutos" min="0" max="59" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="filamento">Quantidade de Filamento (g)</label>
+                        <input type="number" id="filamento" placeholder="Digite os gramas" min="0" step="0.1">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Cor do Filamento</label>
+                        <select id="corFilamento" style="margin-bottom: 10px;">
+                            <option value="padrao">Padrão (Branco, Preto, Cinza)</option>
+                            <option value="cores-basicas">Cores Básicas (Azul, Vermelho, Verde)</option>
+                            <option value="cores-especiais">Cores Especiais (Metalizado, Transparente)</option>
+                            <option value="cores-premium">Cores Premium (Glow, Madeira, Flexível)</option>
+                        </select>
+                        
+                        <div class="color-palette">
+                            <div class="color-palette-option selected" style="background-color: #FFFFFF;" data-color="branco" title="Branco"></div>
+                            <div class="color-palette-option" style="background-color: #000000;" data-color="preto" title="Preto"></div>
+                            <div class="color-palette-option" style="background-color: #808080;" data-color="cinza" title="Cinza"></div>
+                            <div class="color-palette-option" style="background-color: #FF0000;" data-color="vermelho" title="Vermelho"></div>
+                            <div class="color-palette-option" style="background-color: #0000FF;" data-color="azul" title="Azul"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="input-group">
-                    <label for="filamento">Quantidade de Filamento (g)</label>
-                    <input type="number" id="filamento" placeholder="Digite os gramas" min="0" step="0.1">
-                </div>
-                
-                <div class="input-group">
-                    <label>Cor do Filamento</label>
-                    <select id="corFilamento" style="margin-bottom: 10px;">
-                        <option value="padrao">Padrão (Branco, Preto, Cinza)</option>
-                        <option value="cores-basicas">Cores Básicas (Azul, Vermelho, Verde)</option>
-                        <option value="cores-especiais">Cores Especiais (Metalizado, Transparente)</option>
-                        <option value="cores-premium">Cores Premium (Glow, Madeira, Flexível)</option>
-                    </select>
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="precoFilamento">Preço do Filamento (por kg)</label>
+                        <input type="number" id="precoFilamento" placeholder="Preço por kg" min="0" step="0.01" value="94.90">
+                        <div class="price-display">
+                            Preço atual: R$ <span id="precoAtual">94.90</span> por kg
+                        </div>
+                    </div>
                     
-                    <div class="color-palette">
-                        <div class="color-option selected" style="background-color: #FFFFFF;" data-color="branco" title="Branco"></div>
-                        <div class="color-option" style="background-color: #000000;" data-color="preto" title="Preto"></div>
-                        <div class="color-option" style="background-color: #808080;" data-color="cinza" title="Cinza"></div>
-                        <div class="color-option" style="background-color: #FF0000;" data-color="vermelho" title="Vermelho"></div>
-                        <div class="color-option" style="background-color: #0000FF;" data-color="azul" title="Azul"></div>
-                        <div class="color-option" style="background-color: #00FF00;" data-color="verde" title="Verde"></div>
-                        <div class="color-option" style="background-color: #FFFF00;" data-color="amarelo" title="Amarelo"></div>
-                        <div class="color-option" style="background-color: #FFA500;" data-color="laranja" title="Laranja"></div>
-                        <div class="color-option" style="background-color: #800080;" data-color="roxo" title="Roxo"></div>
-                        <div class="color-option" style="background-color: #964B00;" data-color="marrom" title="Marrom"></div>
+                    <div class="input-group">
+                        <label>Bandeira Tarifária (CEMIG)</label>
+                        <div class="energy-flags">
+                            <div class="energy-flag flag-green selected" data-flag="verde">
+                                Verde
+                            </div>
+                            <div class="energy-flag flag-yellow" data-flag="amarela">
+                                Amarela
+                            </div>
+                            <div class="energy-flag flag-red1" data-flag="vermelha1">
+                                Vermelha 1
+                            </div>
+                            <div class="energy-flag flag-red2" data-flag="vermelha2">
+                                Vermelha 2
+                            </div>
+                        </div>
+                        <div class="price-display" style="margin-top: 10px;">
+                            Acréscimo: R$ <span id="acrescimoBandeira">0.00</span> por kWh
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="complexidade">Complexidade da Peça</label>
+                        <select id="complexidade">
+                            <option value="1.0">Baixa (Impressão simples)</option>
+                            <option value="1.2" selected>Média (Suportes moderados)</option>
+                            <option value="1.5">Alta (Muitos suportes, detalhes finos)</option>
+                            <option value="2.0">Muito Alta (Peças complexas, alta chance de falha)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="lucro3d">Margem de Lucro: <span id="lucro3dValue">100</span>%</label>
+                        <div class="slider-container">
+                            <input type="range" id="lucro3d" class="slider" min="0" max="300" value="100">
+                        </div>
+                        <div class="slider-value" id="lucro3dDisplay">100%</div>
                     </div>
                 </div>
             </div>
-            
-            <div class="input-section">
-                <div class="input-group">
-                    <label for="precoFilamento">Preço do Filamento (por kg)</label>
-                    <input type="number" id="precoFilamento" placeholder="Preço por kg" min="0" step="0.01" value="94.90">
-                    <div class="price-display">
-                        Preço atual: R$ <span id="precoAtual">94.90</span> por kg
+        </div>
+
+        <!-- ABA CANECAS -->
+        <div id="canecas" class="tab-content">
+            <div class="calculator-grid">
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="tipoCaneca">Tipo de Caneca</label>
+                        <select id="tipoCaneca">
+                            <option value="ceramica-basica">Cerâmica Básica (325ml)</option>
+                            <option value="ceramica-premium">Cerâmica Premium (400ml)</option>
+                            <option value="magica">Caneca Mágica (300ml)</option>
+                            <option value="plastico">Plástico (350ml)</option>
+                            <option value="personalizada">Personalizada (outro)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="custoCaneca">Custo da Caneca (unidade)</label>
+                        <input type="number" id="custoCaneca" placeholder="Custo por caneca" min="0" step="0.01" value="8.00">
+                        <div class="price-display">
+                            Custo atual: R$ <span id="custoCanecaAtual">8.00</span> por unidade
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="quantidadeCanecas">Quantidade</label>
+                        <input type="number" id="quantidadeCanecas" placeholder="Quantidade de canecas" min="1" value="1">
                     </div>
                 </div>
                 
-                <div class="input-group">
-                    <label for="lucro">Margem de Lucro: <span id="lucroValue">100</span>%</label>
-                    <div class="slider-container">
-                        <input type="range" id="lucro" class="slider" min="0" max="300" value="100">
+                <div class="input-section">
+                    <div class="input-group">
+                        <label>Tamanho da Estampa</label>
+                        <div class="color-options">
+                            <div class="color-option selected" data-value="pequena">Pequena</div>
+                            <div class="color-option" data-value="media">Média</div>
+                            <div class="color-option" data-value="grande">Grande</div>
+                            <div class="color-option" data-value="full">Full Caneca</div>
+                        </div>
                     </div>
-                    <div class="slider-value" id="lucroValueDisplay">100%</div>
+                    
+                    <div class="input-group">
+                        <label>Cores da Estampa</label>
+                        <div class="color-options">
+                            <div class="color-option selected" data-value="1">1 Cor</div>
+                            <div class="color-option" data-value="2-3">2-3 Cores</div>
+                            <div class="color-option" data-value="multicolor">Multicolor</div>
+                            <div class="color-option" data-value="fullcolor">Full Color</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="complexidadeCaneca">Complexidade do Design</label>
+                        <select id="complexidadeCaneca">
+                            <option value="1.0">Simples (Texto/Logo)</option>
+                            <option value="1.3" selected>Média (Ilustração simples)</option>
+                            <option value="1.7">Complexa (Arte detalhada)</option>
+                            <option value="2.0">Muito Complexa (Foto/Arte digital)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="lucroCanecas">Margem de Lucro: <span id="lucroCanecasValue">100</span>%</label>
+                        <div class="slider-container">
+                            <input type="range" id="lucroCanecas" class="slider" min="0" max="300" value="100">
+                        </div>
+                        <div class="slider-value" id="lucroCanecasDisplay">100%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA CAMISAS -->
+        <div id="camisas" class="tab-content">
+            <div class="calculator-grid">
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="tipoCamisa">Tipo de Camisa</label>
+                        <select id="tipoCamisa">
+                            <option value="algodao-basica">Algodão Básica</option>
+                            <option value="algodao-premium">Algodão Premium</option>
+                            <option value="dry-fit">Dry Fit</option>
+                            <option value="polo">Camisa Polo</option>
+                            <option value="moletom">Moletom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="custoCamisa">Custo da Camisa (unidade)</label>
+                        <input type="number" id="custoCamisa" placeholder="Custo por camisa" min="0" step="0.01" value="15.00">
+                        <div class="price-display">
+                            Custo atual: R$ <span id="custoCamisaAtual">15.00</span> por unidade
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="quantidadeCamisas">Quantidade</label>
+                        <input type="number" id="quantidadeCamisas" placeholder="Quantidade de camisas" min="1" value="1">
+                    </div>
                 </div>
                 
-                <div class="input-group">
-                    <label>Bandeira Tarifária (CEMIG)</label>
-                    <div class="energy-flags">
-                        <div class="energy-flag flag-green selected" data-flag="verde">
-                            Verde
-                        </div>
-                        <div class="energy-flag flag-yellow" data-flag="amarela">
-                            Amarela
-                        </div>
-                        <div class="energy-flag flag-red1" data-flag="vermelha1">
-                            Vermelha 1
-                        </div>
-                        <div class="energy-flag flag-red2" data-flag="vermelha2">
-                            Vermelha 2
+                <div class="input-section">
+                    <div class="input-group">
+                        <label>Tamanho da Estampa</label>
+                        <div class="color-options">
+                            <div class="color-option selected" data-value="pequena">Pequena</div>
+                            <div class="color-option" data-value="media">Média</div>
+                            <div class="color-option" data-value="grande">Grande</div>
+                            <div class="color-option" data-value="full">Full Frente</div>
                         </div>
                     </div>
-                    <div class="price-display" style="margin-top: 10px;">
-                        Acréscimo: R$ <span id="acrescimoBandeira">0.00</span> por kWh
+                    
+                    <div class="input-group">
+                        <label>Técnica de Estampa</label>
+                        <div class="color-options">
+                            <div class="color-option selected" data-value="transfer">Transfer</div>
+                            <div class="color-option" data-value="serigrafia">Serigrafia</div>
+                            <div class="color-option" data-value="dtf">DTF</div>
+                            <div class="color-option" data-value="sublimacao">Sublimação</div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="input-group">
-                    <label for="complexidade">Complexidade da Peça</label>
-                    <select id="complexidade">
-                        <option value="1.0">Baixa (Impressão simples)</option>
-                        <option value="1.2" selected>Média (Suportes moderados)</option>
-                        <option value="1.5">Alta (Muitos suportes, detalhes finos)</option>
-                        <option value="2.0">Muito Alta (Peças complexas, alta chance de falha)</option>
-                    </select>
+                    
+                    <div class="input-group">
+                        <label>Localização da Estampa</label>
+                        <div class="color-options">
+                            <div class="color-option selected" data-value="frente">Frente</div>
+                            <div class="color-option" data-value="costas">Costas</div>
+                            <div class="color-option" data-value="frente-costas">Frente + Costas</div>
+                            <div class="color-option" data-value="manga">Manga</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="lucroCamisas">Margem de Lucro: <span id="lucroCamisasValue">100</span>%</label>
+                        <div class="slider-container">
+                            <input type="range" id="lucroCamisas" class="slider" min="0" max="300" value="100">
+                        </div>
+                        <div class="slider-value" id="lucroCamisasDisplay">100%</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -696,7 +925,7 @@
         </div>
         
         <div class="footer">
-            <p>Prisma Studio &copy; 2023 - Calculadora de Impressão 3D</p>
+            <p>Prisma Studio &copy; 2023 - Calculadora Completa de Serviços</p>
         </div>
     </div>
 
@@ -717,7 +946,7 @@
     </div>
 
     <script>
-        // Dados das bandeiras tarifárias (valores por kWh)
+        // ========== CONFIGURAÇÕES GERAIS ==========
         const bandeiras = {
             "verde": 0.00,
             "amarela": 0.01885,
@@ -725,7 +954,6 @@
             "vermelha2": 0.07877
         };
         
-        // Preços base por tipo de filamento
         const precosFilamento = {
             "padrao": 94.90,
             "cores-basicas": 99.90,
@@ -733,58 +961,125 @@
             "cores-premium": 149.90
         };
         
-        // Variáveis globais para armazenar os resultados
+        const precosCanecas = {
+            "ceramica-basica": 8.00,
+            "ceramica-premium": 12.00,
+            "magica": 15.00,
+            "plastico": 6.00,
+            "personalizada": 10.00
+        };
+        
+        const precosCamisas = {
+            "algodao-basica": 15.00,
+            "algodao-premium": 25.00,
+            "dry-fit": 30.00,
+            "polo": 35.00,
+            "moletom": 45.00
+        };
+        
+        const precosEstampaCaneca = {
+            "pequena": 5.00,
+            "media": 8.00,
+            "grande": 12.00,
+            "full": 18.00
+        };
+        
+        const multiplicadorCoresCaneca = {
+            "1": 1.0,
+            "2-3": 1.3,
+            "multicolor": 1.7,
+            "fullcolor": 2.0
+        };
+        
+        const precosEstampaCamisa = {
+            "pequena": 8.00,
+            "media": 12.00,
+            "grande": 18.00,
+            "full": 25.00
+        };
+        
+        const multiplicadorTecnica = {
+            "transfer": 1.0,
+            "serigrafia": 1.2,
+            "dtf": 1.5,
+            "sublimacao": 1.8
+        };
+        
+        const multiplicadorLocalizacao = {
+            "frente": 1.0,
+            "costas": 1.0,
+            "frente-costas": 1.8,
+            "manga": 0.5
+        };
+        
+        // Variáveis globais
         let precoFinal = 0;
         let dadosCalculo = {};
+        let abaAtual = 'impressao3d';
         
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
-            // Definir data atual como padrão
             const hoje = new Date().toISOString().split('T')[0];
             document.getElementById('dataPedido').value = hoje;
             
-            // Configurar bandeiras tarifárias
-            const energyFlags = document.querySelectorAll('.energy-flag');
-            energyFlags.forEach(flag => {
-                flag.addEventListener('click', function() {
-                    energyFlags.forEach(f => f.classList.remove('selected'));
-                    this.classList.add('selected');
-                    atualizarAcrescimoBandeira();
-                });
+            // Configurar eventos dos sliders
+            document.getElementById('lucro3d').addEventListener('input', function() {
+                document.getElementById('lucro3dValue').textContent = this.value;
+                document.getElementById('lucro3dDisplay').textContent = this.value + '%';
             });
             
-            // Configurar paleta de cores
-            const colorOptions = document.querySelectorAll('.color-option');
-            colorOptions.forEach(color => {
-                color.addEventListener('click', function() {
-                    colorOptions.forEach(c => c.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
+            document.getElementById('lucroCanecas').addEventListener('input', function() {
+                document.getElementById('lucroCanecasValue').textContent = this.value;
+                document.getElementById('lucroCanecasDisplay').textContent = this.value + '%';
             });
             
-            // Atualizar preço do filamento quando a categoria muda
+            document.getElementById('lucroCamisas').addEventListener('input', function() {
+                document.getElementById('lucroCamisasValue').textContent = this.value;
+                document.getElementById('lucroCamisasDisplay').textContent = this.value + '%';
+            });
+            
+            // Configurar seleções
+            configurarSelecoes();
+            
+            // Configurar eventos de mudança
             document.getElementById('corFilamento').addEventListener('change', function() {
                 const precoFilamento = document.getElementById('precoFilamento');
                 const precoAtual = document.getElementById('precoAtual');
-                
                 precoFilamento.value = precosFilamento[this.value];
                 precoAtual.textContent = precoFilamento.value;
             });
             
-            // Atualizar o valor exibido do slider de lucro
-            document.getElementById('lucro').addEventListener('input', function() {
-                document.getElementById('lucroValue').textContent = this.value;
-                document.getElementById('lucroValueDisplay').textContent = this.value + '%';
+            document.getElementById('tipoCaneca').addEventListener('change', function() {
+                const custo = precosCanecas[this.value];
+                document.getElementById('custoCaneca').value = custo;
+                document.getElementById('custoCanecaAtual').textContent = custo;
             });
             
-            // Atualizar o preço atual quando o campo é alterado
-            document.getElementById('precoFilamento').addEventListener('input', function() {
-                document.getElementById('precoAtual').textContent = this.value;
+            document.getElementById('tipoCamisa').addEventListener('change', function() {
+                const custo = precosCamisas[this.value];
+                document.getElementById('custoCamisa').value = custo;
+                document.getElementById('custoCamisaAtual').textContent = custo;
             });
-            
-            // Inicializar o acréscimo da bandeira
-            atualizarAcrescimoBandeira();
         });
+        
+        function configurarSelecoes() {
+            // Configurar opções de seleção
+            const todasOpcoes = document.querySelectorAll('.color-option, .color-palette-option, .energy-flag');
+            todasOpcoes.forEach(opcao => {
+                opcao.addEventListener('click', function() {
+                    const grupo = this.parentElement;
+                    if (grupo.classList.contains('color-options') || grupo.classList.contains('energy-flags') || grupo.classList.contains('color-palette')) {
+                        grupo.querySelectorAll('.color-option, .color-palette-option, .energy-flag').forEach(o => o.classList.remove('selected'));
+                    }
+                    this.classList.add('selected');
+                    
+                    // Atualizar bandeira tarifária
+                    if (this.classList.contains('energy-flag')) {
+                        atualizarAcrescimoBandeira();
+                    }
+                });
+            });
+        }
         
         function atualizarAcrescimoBandeira() {
             const bandeiraSelecionada = document.querySelector('.energy-flag.selected').getAttribute('data-flag');
@@ -792,113 +1087,275 @@
             document.getElementById('acrescimoBandeira').textContent = acrescimo.toFixed(5);
         }
         
+        function openTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            const tabButtons = document.querySelectorAll('.tab');
+            tabButtons.forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            abaAtual = tabName;
+        }
+        
         function calcularCusto() {
-            // Obter valores dos inputs
+            switch(abaAtual) {
+                case 'impressao3d':
+                    calcularImpressao3D();
+                    break;
+                case 'canecas':
+                    calcularCanecas();
+                    break;
+                case 'camisas':
+                    calcularCamisas();
+                    break;
+            }
+        }
+        
+        // ========== IMPRESSÃO 3D ==========
+        function calcularImpressao3D() {
             let tempoHoras = parseFloat(document.getElementById('tempoHoras').value) || 0;
             let tempoMinutos = parseFloat(document.getElementById('tempoMinutos').value) || 0;
             let filamento = parseFloat(document.getElementById('filamento').value) || 0;
-            let margemLucro = parseFloat(document.getElementById('lucro').value) || 100;
+            let margemLucro = parseFloat(document.getElementById('lucro3d').value) || 100;
             let precoFilamentoKg = parseFloat(document.getElementById('precoFilamento').value) || 94.90;
             let complexidade = parseFloat(document.getElementById('complexidade').value) || 1.2;
             
-            // Obter bandeira tarifária selecionada
             const bandeiraSelecionada = document.querySelector('.energy-flag.selected').getAttribute('data-flag');
             const acrescimoBandeira = bandeiras[bandeiraSelecionada];
+            const corSelecionada = document.querySelector('.color-palette-option.selected').getAttribute('data-color');
             
-            // Obter cor selecionada
-            const corSelecionada = document.querySelector('.color-option.selected').getAttribute('data-color');
-            
-            // Converter tempo total para horas
             let tempoTotal = tempoHoras + (tempoMinutos / 60);
             
-            // Validações
             if (tempoTotal <= 0 && filamento <= 0) {
                 alert("Por favor, informe pelo menos o tempo de impressão ou a quantidade de filamento.");
                 return;
             }
             
-            // Parâmetros de cálculo
-            let precoKWhBase = 0.70; // Valor base do kWh (CEMIG)
+            let precoKWhBase = 0.70;
             let precoKWh = precoKWhBase + acrescimoBandeira;
-            let potencia = 0.1; // Impressora consome 100W (0.1 kW)
+            let potencia = 0.1;
             
-            // Cálculos
             let custoEnergia = precoKWh * potencia * tempoTotal;
             let custoFilamento = (precoFilamentoKg / 1000) * filamento;
-            let custoOperacional = (custoEnergia + custoFilamento) * 0.1; // 10% para manutenção e outros custos
+            let custoOperacional = (custoEnergia + custoFilamento) * 0.1;
             let custoTotal = custoEnergia + custoFilamento + custoOperacional;
             
-            // Aplicar fator de complexidade
             custoTotal *= complexidade;
-            
-            // Aplicar margem de lucro
             precoFinal = custoTotal * (1 + margemLucro / 100);
             
-            // Salvar dados para o PDF
             dadosCalculo = {
-                tempoHoras,
-                tempoMinutos,
-                filamento,
-                corSelecionada,
-                bandeiraSelecionada,
-                complexidade,
-                custoEnergia,
-                custoFilamento,
-                custoOperacional,
-                custoTotal,
-                precoFinal,
-                margemLucro
+                tipo: 'Impressão 3D',
+                produto: 'Peça impressa em 3D',
+                custoEnergia: custoEnergia,
+                custoFilamento: custoFilamento,
+                custoOperacional: custoOperacional,
+                custoTotal: custoTotal,
+                precoFinal: precoFinal,
+                margemLucro: margemLucro,
+                detalhes: {
+                    tempoHoras: tempoHoras,
+                    tempoMinutos: tempoMinutos,
+                    filamento: filamento,
+                    corFilamento: corSelecionada,
+                    complexidade: complexidade,
+                    bandeiraTarifaria: bandeiraSelecionada
+                }
             };
             
-            // Habilitar botão de PDF
             document.getElementById('btnPDF').disabled = false;
+            mostrarResultados();
+        }
+        
+        // ========== CANECAS ==========
+        function calcularCanecas() {
+            const tipoCaneca = document.getElementById('tipoCaneca').value;
+            const custoCaneca = parseFloat(document.getElementById('custoCaneca').value) || 0;
+            const quantidade = parseInt(document.getElementById('quantidadeCanecas').value) || 1;
+            const complexidade = parseFloat(document.getElementById('complexidadeCaneca').value) || 1.3;
+            const margemLucro = parseFloat(document.getElementById('lucroCanecas').value) || 100;
             
-            // Formatar para exibição
-            document.getElementById('resultado').innerHTML = `
+            const opcoes = document.querySelectorAll('#canecas .color-option[data-value].selected');
+            const tamanhoEstampa = opcoes[0].getAttribute('data-value');
+            const coresEstampa = opcoes[1].getAttribute('data-value');
+            
+            const custoBaseCaneca = custoCaneca;
+            const custoEstampaBase = precosEstampaCaneca[tamanhoEstampa] || 8.00;
+            const multiplicadorCores = multiplicadorCoresCaneca[coresEstampa] || 1.0;
+            const custoEstampa = custoEstampaBase * multiplicadorCores * complexidade;
+            const custoUnitario = custoBaseCaneca + custoEstampa;
+            const custoTotal = custoUnitario * quantidade;
+            const custoSetup = quantidade > 1 ? 0 : 15.00;
+            
+            const custoFinal = custoTotal + custoSetup;
+            precoFinal = custoFinal * (1 + margemLucro / 100);
+            
+            dadosCalculo = {
+                tipo: 'Caneca Personalizada',
+                produto: tipoCaneca,
+                custoBase: custoBaseCaneca,
+                custoEstampa: custoEstampa,
+                custoUnitario: custoUnitario,
+                quantidade: quantidade,
+                custoSetup: custoSetup,
+                custoTotal: custoFinal,
+                precoFinal: precoFinal,
+                margemLucro: margemLucro,
+                detalhes: {
+                    tamanhoEstampa: tamanhoEstampa,
+                    coresEstampa: coresEstampa,
+                    complexidade: complexidade
+                }
+            };
+            
+            document.getElementById('btnPDF').disabled = false;
+            mostrarResultados();
+        }
+        
+        // ========== CAMISAS ==========
+        function calcularCamisas() {
+            const tipoCamisa = document.getElementById('tipoCamisa').value;
+            const custoCamisa = parseFloat(document.getElementById('custoCamisa').value) || 0;
+            const quantidade = parseInt(document.getElementById('quantidadeCamisas').value) || 1;
+            const margemLucro = parseFloat(document.getElementById('lucroCamisas').value) || 100;
+            
+            const opcoes = document.querySelectorAll('#camisas .color-option[data-value].selected');
+            const tamanhoEstampa = opcoes[0].getAttribute('data-value');
+            const tecnica = opcoes[1].getAttribute('data-value');
+            const localizacao = opcoes[2].getAttribute('data-value');
+            
+            const custoBaseCamisa = custoCamisa;
+            const custoEstampaBase = precosEstampaCamisa[tamanhoEstampa] || 12.00;
+            const multiplicadorTec = multiplicadorTecnica[tecnica] || 1.0;
+            const multiplicadorLoc = multiplicadorLocalizacao[localizacao] || 1.0;
+            const custoEstampa = custoEstampaBase * multiplicadorTec * multiplicadorLoc;
+            const custoUnitario = custoBaseCamisa + custoEstampa;
+            const custoTotal = custoUnitario * quantidade;
+            const custoSetup = quantidade > 5 ? 0 : 25.00;
+            
+            const custoFinal = custoTotal + custoSetup;
+            precoFinal = custoFinal * (1 + margemLucro / 100);
+            
+            dadosCalculo = {
+                tipo: 'Camisa Personalizada',
+                produto: tipoCamisa,
+                custoBase: custoBaseCamisa,
+                custoEstampa: custoEstampa,
+                custoUnitario: custoUnitario,
+                quantidade: quantidade,
+                custoSetup: custoSetup,
+                custoTotal: custoFinal,
+                precoFinal: precoFinal,
+                margemLucro: margemLucro,
+                detalhes: {
+                    tamanhoEstampa: tamanhoEstampa,
+                    tecnica: tecnica,
+                    localizacao: localizacao
+                }
+            };
+            
+            document.getElementById('btnPDF').disabled = false;
+            mostrarResultados();
+        }
+        
+        function mostrarResultados() {
+            let html = `
                 <div class="result-details">
                     <div class="result-item">
+                        <span>Tipo de Serviço:</span>
+                        <span>${dadosCalculo.tipo}</span>
+                    </div>`;
+            
+            // Detalhes específicos por tipo
+            if (dadosCalculo.tipo === 'Impressão 3D') {
+                html += `
+                    <div class="result-item">
                         <span>Tempo de Impressão:</span>
-                        <span>${tempoHoras}h ${tempoMinutos}min</span>
+                        <span>${dadosCalculo.detalhes.tempoHoras}h ${dadosCalculo.detalhes.tempoMinutos}min</span>
                     </div>
                     <div class="result-item">
                         <span>Filamento Utilizado:</span>
-                        <span>${filamento.toFixed(2)}g</span>
+                        <span>${dadosCalculo.detalhes.filamento.toFixed(2)}g</span>
                     </div>
                     <div class="result-item">
                         <span>Cor do Filamento:</span>
-                        <span>${corSelecionada.charAt(0).toUpperCase() + corSelecionada.slice(1)}</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Bandeira Tarifária:</span>
-                        <span>${document.querySelector('.energy-flag.selected').textContent}</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Complexidade:</span>
-                        <span>${document.getElementById('complexidade').options[document.getElementById('complexidade').selectedIndex].text}</span>
+                        <span>${dadosCalculo.detalhes.corFilamento.charAt(0).toUpperCase() + dadosCalculo.detalhes.corFilamento.slice(1)}</span>
                     </div>
                     <div class="result-item">
                         <span>Custo de Energia:</span>
-                        <span>R$ ${custoEnergia.toFixed(2)}</span>
+                        <span>R$ ${dadosCalculo.custoEnergia.toFixed(2)}</span>
                     </div>
                     <div class="result-item">
                         <span>Custo do Filamento:</span>
-                        <span>R$ ${custoFilamento.toFixed(2)}</span>
+                        <span>R$ ${dadosCalculo.custoFilamento.toFixed(2)}</span>
                     </div>
                     <div class="result-item">
                         <span>Custo Operacional:</span>
-                        <span>R$ ${custoOperacional.toFixed(2)}</span>
+                        <span>R$ ${dadosCalculo.custoOperacional.toFixed(2)}</span>
+                    </div>`;
+            } else {
+                html += `
+                    <div class="result-item">
+                        <span>Modelo:</span>
+                        <span>${dadosCalculo.produto}</span>
                     </div>
                     <div class="result-item">
+                        <span>Quantidade:</span>
+                        <span>${dadosCalculo.quantidade} unidade(s)</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Custo do Produto:</span>
+                        <span>R$ ${dadosCalculo.custoBase.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Custo da Estampa:</span>
+                        <span>R$ ${dadosCalculo.custoEstampa.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Custo Unitário:</span>
+                        <span>R$ ${dadosCalculo.custoUnitario.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Custo de Setup:</span>
+                        <span>R$ ${dadosCalculo.custoSetup.toFixed(2)}</span>
+                    </div>`;
+                
+                if (dadosCalculo.tipo === 'Caneca Personalizada') {
+                    html += `
+                        <div class="result-item">
+                            <span>Tamanho da Estampa:</span>
+                            <span>${dadosCalculo.detalhes.tamanhoEstampa.charAt(0).toUpperCase() + dadosCalculo.detalhes.tamanhoEstampa.slice(1)}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Cores:</span>
+                            <span>${dadosCalculo.detalhes.coresEstampa}</span>
+                        </div>`;
+                } else {
+                    html += `
+                        <div class="result-item">
+                            <span>Técnica:</span>
+                            <span>${dadosCalculo.detalhes.tecnica.charAt(0).toUpperCase() + dadosCalculo.detalhes.tecnica.slice(1)}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Localização:</span>
+                            <span>${dadosCalculo.detalhes.localizacao.charAt(0).toUpperCase() + dadosCalculo.detalhes.localizacao.slice(1)}</span>
+                        </div>`;
+                }
+            }
+            
+            html += `
+                    <div class="result-item">
                         <span>Custo Total (sem lucro):</span>
-                        <span>R$ ${custoTotal.toFixed(2)}</span>
+                        <span>R$ ${dadosCalculo.custoTotal.toFixed(2)}</span>
                     </div>
                 </div>
                 <div class="result-total">
-                    <span>Preço Final (com ${margemLucro}% de lucro):</span>
-                    <span>R$ ${precoFinal.toFixed(2)}</span>
-                </div>
-            `;
+                    <span>Preço Final (com ${dadosCalculo.margemLucro}% de lucro):</span>
+                    <span>R$ ${dadosCalculo.precoFinal.toFixed(2)}</span>
+                </div>`;
             
+            document.getElementById('resultado').innerHTML = html;
             document.getElementById('resultadoModal').style.display = 'flex';
         }
 
@@ -907,30 +1364,9 @@
         }
         
         function limparCampos() {
-            document.getElementById('tempoHoras').value = '0';
-            document.getElementById('tempoMinutos').value = '0';
-            document.getElementById('filamento').value = '';
-            document.getElementById('lucro').value = '100';
-            document.getElementById('lucroValue').textContent = '100';
-            document.getElementById('lucroValueDisplay').textContent = '100%';
-            document.getElementById('precoFilamento').value = '94.90';
-            document.getElementById('precoAtual').textContent = '94.90';
-            document.getElementById('corFilamento').value = 'padrao';
-            document.getElementById('complexidade').value = '1.2';
             document.getElementById('nomeCliente').value = '';
             document.getElementById('produto').value = '';
             document.getElementById('observacoes').value = '';
-            
-            // Resetar bandeira para verde
-            document.querySelectorAll('.energy-flag').forEach(flag => flag.classList.remove('selected'));
-            document.querySelector('.flag-green').classList.add('selected');
-            atualizarAcrescimoBandeira();
-            
-            // Resetar cor para branco
-            document.querySelectorAll('.color-option').forEach(color => color.classList.remove('selected'));
-            document.querySelector('.color-option[data-color="branco"]').classList.add('selected');
-            
-            // Desabilitar botão PDF
             document.getElementById('btnPDF').disabled = true;
         }
         
@@ -938,16 +1374,12 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Obter dados do cliente
             const nomeCliente = document.getElementById('nomeCliente').value || "Cliente não informado";
-            const produto = document.getElementById('produto').value || "Produto não informado";
+            const produto = document.getElementById('produto').value || "Produto personalizado";
             const dataPedido = document.getElementById('dataPedido').value || new Date().toISOString().split('T')[0];
             const observacoes = document.getElementById('observacoes').value || "Nenhuma observação adicional";
             
-            // Formatar data
             const dataFormatada = new Date(dataPedido).toLocaleDateString('pt-BR');
-            
-            // Cores para o PDF
             const corPrimaria = [106, 13, 173];
             const corSecundaria = [0, 191, 255];
             
@@ -961,7 +1393,7 @@
             
             doc.setFontSize(12);
             doc.setFont('helvetica', 'normal');
-            doc.text('Impressão 3D Profissional - Recibo de Venda', 105, 24, { align: 'center' });
+            doc.text('Serviços Personalizados - Recibo de Venda', 105, 24, { align: 'center' });
             
             // Título do recibo
             doc.setTextColor(0, 0, 0);
@@ -979,29 +1411,34 @@
             doc.text(`Produto: ${produto}`, 20, 76);
             doc.text(`Data: ${dataFormatada}`, 20, 84);
             
-            // Detalhes da impressão
+            // Detalhes do serviço
             doc.setFont('helvetica', 'bold');
             doc.text('Detalhes do Serviço:', 20, 100);
             
             doc.setFont('helvetica', 'normal');
-            doc.text(`• Impressão 3D personalizada`, 20, 108);
-            doc.text(`• Tempo de impressão: ${dadosCalculo.tempoHoras}h ${dadosCalculo.tempoMinutos}min`, 20, 116);
-            doc.text(`• Filamento: ${dadosCalculo.filamento.toFixed(2)}g - Cor: ${dadosCalculo.corSelecionada.charAt(0).toUpperCase() + dadosCalculo.corSelecionada.slice(1)}`, 20, 124);
-            doc.text(`• Complexidade: ${document.getElementById('complexidade').options[document.getElementById('complexidade').selectedIndex].text}`, 20, 132);
+            doc.text(`• ${dadosCalculo.tipo}`, 20, 108);
+            
+            if (dadosCalculo.tipo === 'Impressão 3D') {
+                doc.text(`• Tempo: ${dadosCalculo.detalhes.tempoHoras}h ${dadosCalculo.detalhes.tempoMinutos}min`, 20, 116);
+                doc.text(`• Filamento: ${dadosCalculo.detalhes.filamento.toFixed(2)}g - ${dadosCalculo.detalhes.corFilamento}`, 20, 124);
+            } else {
+                doc.text(`• Quantidade: ${dadosCalculo.quantidade} unidade(s)`, 20, 116);
+                doc.text(`• ${dadosCalculo.produto}`, 20, 124);
+            }
             
             // Observações
             let observacoesLines = [];
             if (observacoes && observacoes !== "Nenhuma observação adicional") {
                 doc.setFont('helvetica', 'bold');
-                doc.text('Observações:', 20, 148);
+                doc.text('Observações:', 20, 140);
                 
                 observacoesLines = doc.splitTextToSize(observacoes, 170);
                 doc.setFont('helvetica', 'normal');
-                doc.text(observacoesLines, 20, 156);
+                doc.text(observacoesLines, 20, 148);
             }
             
             // Preço final
-            const yPos = (observacoes && observacoes !== "Nenhuma observação adicional") ? 156 + (observacoesLines.length * 6) + 15 : 148;
+            const yPos = (observacoes && observacoes !== "Nenhuma observação adicional") ? 148 + (observacoesLines.length * 6) + 15 : 140;
             
             doc.setFillColor(...corSecundaria);
             doc.rect(15, yPos, 180, 25, 'F');
@@ -1012,7 +1449,7 @@
             doc.text('VALOR TOTAL', 105, yPos + 10, { align: 'center' });
             
             doc.setFontSize(20);
-            doc.text(`R$ ${precoFinal.toFixed(2)}`, 105, yPos + 20, { align: 'center' });
+            doc.text(`R$ ${dadosCalculo.precoFinal.toFixed(2)}`, 105, yPos + 20, { align: 'center' });
             
             // Assinatura
             const assinaturaY = yPos + 50;
@@ -1021,7 +1458,7 @@
             doc.text('_________________________________________', 105, assinaturaY, { align: 'center' });
             doc.text('Assinatura do Prestador de Serviço', 105, assinaturaY + 8, { align: 'center' });
             
-            // Rodapé com informações legais
+            // Rodapé
             const rodapeY = 270;
             doc.setTextColor(100, 100, 100);
             doc.setFontSize(8);
@@ -1030,7 +1467,8 @@
             doc.text('Documento válido para comprovação de transação entre particulares', 105, rodapeY + 10, { align: 'center' });
             
             // Salvar o PDF
-            doc.save(`Recibo_${produto.replace(/\s+/g, '_')}_${dataFormatada.replace(/\//g, '-')}.pdf`);
+            const nomeArquivo = `Recibo_${produto.replace(/\s+/g, '_')}_${dataFormatada.replace(/\//g, '-')}.pdf`;
+            doc.save(nomeArquivo);
         }
     </script>
 </body>
